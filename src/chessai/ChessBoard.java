@@ -1,5 +1,13 @@
 package chessai;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RadialGradientPaint;
+import java.awt.RenderingHints;
+import java.awt.geom.Ellipse2D;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -66,16 +74,69 @@ public class ChessBoard {
     private HashMap<String, Integer> positions;
     
     /**
+     * The size of the squares
+     */
+    public static final int SQUARE_SIZE = 64;
+    
+    /**
      * Default constructor.
      */
     public ChessBoard() {
         board = new AbstractPiece[8][8];
         kingPos = new HashMap<>();
+        initImages();
         addPieces();
         mr = new MoveRecorder();
         allLegalMoves = new HashMap<>();
         positions = new HashMap<>();
         recalculateMoves();
+    }
+    
+    /**
+     * Initializes the images
+     */
+    private void initImages() {
+        try {
+            Bishop.loadImages(getClass().getResource("/images/falseBishop.png"), getClass().getResource("/images/trueBishop.png"));
+        } catch(IOException e) {
+            System.err.println("Could not find Bishop file images");
+            System.exit(1); 
+        }
+        
+        try {
+            King.loadImages(getClass().getResource("/images/falseKing.png"), getClass().getResource("/images/trueKing.png"));
+        } catch(IOException e) {
+            System.err.println("Could not find King file images");
+            System.exit(1); 
+        }
+        
+        try {
+            Knight.loadImages(getClass().getResource("/images/falseKnight.png"), getClass().getResource("/images/trueKnight.png"));
+        } catch(IOException e) {
+            System.err.println("Could not find Knight file images");
+            System.exit(1); 
+        }
+        
+        try {
+            Pawn.loadImages(getClass().getResource("/images/falsePawn.png"), getClass().getResource("/images/truePawn.png"));
+        } catch(IOException e) {
+            System.err.println("Could not find Pawn file images");
+            System.exit(1); 
+        }
+        
+        try {
+            Queen.loadImages(getClass().getResource("/images/falseQueen.png"), getClass().getResource("/images/trueQueen.png"));
+        } catch(IOException e) {
+            System.err.println("Could not find Queen file images");
+            System.exit(1); 
+        }
+        
+        try {
+            Rook.loadImages(getClass().getResource("/images/falseRook.png"), getClass().getResource("/images/trueRook.png"));
+        } catch(IOException e) {
+            System.err.println("Could not find Rook file images");
+            System.exit(1); 
+        }
     }
     
     /**
@@ -119,6 +180,89 @@ public class ChessBoard {
             System.arraycopy(cb.board[i], 0, board[i], 0, cb.board[i].length);
         }
         this.enPassant = cb.enPassant;
+    }
+    
+    /**
+     * Draws the current state of the chess board
+     * @param g Graphics to draw on
+     */
+    public void draw(Graphics g) {
+        drawCheckers(g);
+        drawCheck(g);
+        drawPieces(g);
+    }
+    
+    /**
+     * Draws the checkered pattern
+     * @param g Graphics to draw on
+     */
+    private void drawCheckers(Graphics g) {
+        g.setColor(new Color(181, 136, 99));
+        g.fillRect(0, 0, 8*SQUARE_SIZE, 8*SQUARE_SIZE);
+        g.setColor(new Color(240, 217, 181));
+        for(int i = 0;i<8*SQUARE_SIZE;i+=SQUARE_SIZE*2) {
+            for(int j = 0;j<8*SQUARE_SIZE;j+=SQUARE_SIZE*2) {
+                g.fillRect(i, j, SQUARE_SIZE, SQUARE_SIZE);
+                g.fillRect(i+SQUARE_SIZE, j+SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
+            }
+        }
+        g.setColor(new Color(155, 199, 0, 105));
+        Graphics2D g2D = (Graphics2D) g;
+        g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2D.setPaint(Color.BLACK);
+        g2D.setFont(new Font("Century Gothic", 0, 12)); // NOI18N
+        for(int i = 0;i<8;i++) {
+            g2D.drawString((char)('a' + i) + "", 
+                    SQUARE_SIZE*i+(SQUARE_SIZE/2)-3, SQUARE_SIZE*8+12);
+            g2D.drawString((8-i) + "", SQUARE_SIZE*8+3, 
+                    SQUARE_SIZE*i+(SQUARE_SIZE/2)+6);
+        }
+    }
+    
+    /**
+     * Draws the pieces on the board.
+     * @param g Graphics to draw on
+     */
+    private void drawPieces(Graphics g) {
+        for(int i = 0;i<board.length*SQUARE_SIZE;i+=SQUARE_SIZE) {
+            for(int j = 0;j<board[i/SQUARE_SIZE].length*SQUARE_SIZE;j+=SQUARE_SIZE) {
+                if(board[i/SQUARE_SIZE][j/SQUARE_SIZE] != null) {
+                    board[i/SQUARE_SIZE][j/SQUARE_SIZE].draw(g, i+7, j+7, 50, 50);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Draws whether either king is in check
+     * @param g the Graphics to draw on
+     */
+    private void drawCheck(Graphics g) {
+        Graphics2D g2D = (Graphics2D) g;
+        g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        float[] fractions = new float[]{ 0.0f, 0.25f, 0.89f, 1.0f };
+        Color[] colors = new Color[]{
+            new Color(255, 0, 0, 255), new Color(231, 0, 0, 255), 
+            new Color(169, 0, 0, 0), new Color(158, 0, 0, 0)
+        };
+        if(inCheck(playerIsWhite)) {
+            String kingAt = kingPos.get(playerIsWhite);
+            int col = getColumn(kingAt), row = getRow(kingAt); // Works
+            g2D.setPaint(
+                    new RadialGradientPaint(
+                            30 + (col*SQUARE_SIZE), 
+                            30 + (row*SQUARE_SIZE), 
+                            SQUARE_SIZE*7/12, fractions, colors
+                    )
+            );
+            g2D.fill(
+                    new Ellipse2D.Double(
+                            col*SQUARE_SIZE, 
+                            row*SQUARE_SIZE, 
+                            SQUARE_SIZE, SQUARE_SIZE
+                    )
+            );
+        }
     }
     
     /**
