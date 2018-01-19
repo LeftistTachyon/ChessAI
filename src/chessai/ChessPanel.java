@@ -44,7 +44,6 @@ public class ChessPanel extends JPanel {
     @Override
     public void paint(Graphics g) {
         drawBackground(g, Color.WHITE);
-        cb.draw(g);
     }
     
     /**

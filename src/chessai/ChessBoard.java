@@ -313,7 +313,7 @@ public class ChessBoard {
                     String current = ChessBoard.toSquare(i, j);
                     LinkedList<String> moves = board[i][j].legalMoves(this, current);
                     if(board[i][j].getCharRepresentation().equals("P") && 
-                            ((i == 1 && !playerIsWhite) || (i == 6 && playerIsWhite))) {
+                            ((i == 1 && playerIsWhite) || (i == 6 && !playerIsWhite))) {
                         LinkedList<String> copy = new LinkedList<>(moves);
                         for(String move : copy) {
                             moves.add(move);
@@ -388,7 +388,7 @@ public class ChessBoard {
                 to = allLegalMoves.get(key).get(copy);
                 if(getPiece(from)
                         .getCharRepresentation().equals("P") && 
-                        ((getRow(to) == 1 && !playerIsWhite) || (getRow(to) == 6 && playerIsWhite))) {
+                        ((getRow(to) == 1 && playerIsWhite) || (getRow(to) == 6 && !playerIsWhite))) {
                     promotePiece(from, to, copy%4 + 1);
                 }
                 break;
@@ -398,7 +398,8 @@ public class ChessBoard {
         }
         if(from == null || to == null) 
             assert false : "Impossible!";
-        System.out.println("Move #" + whichMove + " \tFrom: " + from + "\tTo: " + to);
+        String side = (playerIsWhite)?"White":"Black";
+        System.out.println(side + " moved. \tMove #" + whichMove + " \tFrom: " + from + " \tTo: " + to);
         movePiece(from, to);
     }
     

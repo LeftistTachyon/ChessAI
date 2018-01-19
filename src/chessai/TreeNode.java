@@ -57,6 +57,7 @@ public class TreeNode {
      * Searches through the Monte Carlo tree.
      */
     public void selectAction() {
+        System.out.println("SELECTING");
         List<TreeNode> visited = new LinkedList<>();
         TreeNode cur = this;
         visited.add(this);
@@ -65,10 +66,14 @@ public class TreeNode {
             // System.out.println("Adding: " + cur);
             visited.add(cur);
         }
+        System.out.println("EXPANDING");
         cur.expand();
+        System.out.println("SELECTING");
         TreeNode newNode = cur.select();
         visited.add(newNode);
+        System.out.println("SIMULATING");
         double value = simulate(newNode);
+        System.out.println("UPDATING");
         for(TreeNode node : visited) {
             // would need extra logic for n-player game
             // System.out.println(node.toString());
