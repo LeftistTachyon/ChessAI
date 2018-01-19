@@ -81,9 +81,12 @@ public class TreeNode {
      */
     public void expand() {
         children = new TreeNode[nActions];
+        cb.printBoard();
         for (int i=0; i<nActions; i++) {
             ChessBoard temp = new ChessBoard(cb);
             temp.movePiece(i);
+            temp.recalculateMoves();
+            temp.printBoard();
             children[i] = new TreeNode(temp);
         }
     }
@@ -130,11 +133,15 @@ public class TreeNode {
         // and just return this at random
         // Use a NN to minimax through later
         ChessBoard copy = new ChessBoard(tn.cb);
-        while(!copy.checkMated(copy.currentPlayer()) || 
-                !copy.isDraw(copy.currentPlayer())) {
+        copy.printBoard();
+        while(!(copy.checkMated(copy.currentPlayer()) || 
+                copy.isDraw(copy.currentPlayer()))) {
             int random = r.nextInt(copy.numOfLegalMoves());
             copy.movePiece(random);
             copy.printBoard();
+            System.out.println();
+            System.out.println("Checkmate: " + copy.checkMated(copy.currentPlayer()) + 
+                    " \tDraw: " + copy.isDraw(copy.currentPlayer()));
         }
         return (copy.checkMated(true))? -1 : (copy.checkMated(false) ? 1 : 0);
     }
