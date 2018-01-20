@@ -378,6 +378,7 @@ public class ChessBoard {
      * @param whichMove which move
      */
     public void movePiece(int whichMove) {
+        recalculateMoves();
         if(whichMove < 0 || whichMove >= numOfLegalMoves()) 
             throw new IndexOutOfBoundsException(whichMove + "");
         int copy = whichMove;
@@ -423,21 +424,26 @@ public class ChessBoard {
      * @param toWhereY to which row to move a piece
      */
     public void maybeMove(int fromWhereX, int fromWhereY, int toWhereX, int toWhereY) {
-        if(board[fromWhereX][fromWhereY].getCharRepresentation().equals("K")) {
-            if(Math.abs(fromWhereX-toWhereX) == 2 && fromWhereY == toWhereY) {
-                // Castling
-                if(fromWhereX < toWhereX) {
-                    // Castling Kingside
-                    board[toWhereX-1][toWhereY] = board[7][fromWhereY];
-                    board[7][fromWhereY] = null;
-                } else {
-                    // Castling Queenside
-                    board[toWhereX+1][toWhereY] = board[0][fromWhereY];
-                    board[0][fromWhereY] = null;
+        try {
+            if (board[fromWhereX][fromWhereY].getCharRepresentation().equals("K")) {
+                if (Math.abs(fromWhereX - toWhereX) == 2 && fromWhereY == toWhereY) {
+                    // Castling
+                    if (fromWhereX < toWhereX) {
+                        // Castling Kingside
+                        board[toWhereX - 1][toWhereY] = board[7][fromWhereY];
+                        board[7][fromWhereY] = null;
+                    } else {
+                        // Castling Queenside
+                        board[toWhereX + 1][toWhereY] = board[0][fromWhereY];
+                        board[0][fromWhereY] = null;
+                    }
                 }
+            } else if (toSquare(toWhereX, toWhereY).equals(enPassant)) {
+                board[getColumn(enPassant)][getRow(enPassant) + (fromWhereY - toWhereY)] = null;
             }
-        } else if(toSquare(toWhereX, toWhereY).equals(enPassant)) {
-            board[getColumn(enPassant)][getRow(enPassant)+(fromWhereY-toWhereY)] = null;
+        } catch (NullPointerException npe) {
+            System.out.println(board[fromWhereX][fromWhereY] == null);
+            System.out.println(board[fromWhereX][fromWhereY].getCharRepresentation());
         }
         
         board[toWhereX][toWhereY] = board[fromWhereX][fromWhereY];
@@ -924,6 +930,14 @@ public class ChessBoard {
      */
     public boolean currentPlayer() {
         return playerIsWhite;
+    }
+
+    /**
+     * Sets this current player
+     * @param playerIsWhite whether the player would be white
+     */
+    public void setCurrentPlayer(boolean playerIsWhite) {
+        this.playerIsWhite = playerIsWhite;
     }
     
     /**

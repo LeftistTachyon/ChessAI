@@ -57,6 +57,7 @@ public class TreeNode {
      * Searches through the Monte Carlo tree.
      */
     public void selectAction() {
+        nActions = cb.numOfLegalMoves();
         System.out.println("SELECTING");
         List<TreeNode> visited = new LinkedList<>();
         TreeNode cur = this;
@@ -70,6 +71,7 @@ public class TreeNode {
         cur.expand();
         System.out.println("SELECTING");
         TreeNode newNode = cur.select();
+        newNode.cb.setCurrentPlayer(!cur.cb.currentPlayer());
         visited.add(newNode);
         System.out.println("SIMULATING");
         double value = simulate(newNode);
@@ -139,10 +141,14 @@ public class TreeNode {
         // Use a NN to minimax through later
         ChessBoard copy = new ChessBoard(tn.cb);
         copy.printBoard();
+        copy.setCurrentPlayer(!copy.currentPlayer());
         while(!(copy.checkMated(copy.currentPlayer()) || 
                 copy.isDraw(copy.currentPlayer()))) {
+            boolean isWhite = copy.currentPlayer();
+            copy.recalculateMoves();
             int random = r.nextInt(copy.numOfLegalMoves());
             copy.movePiece(random);
+            copy.setCurrentPlayer(!isWhite);
             copy.printBoard();
             System.out.println();
             System.out.println("Checkmate: " + copy.checkMated(copy.currentPlayer()) + 
