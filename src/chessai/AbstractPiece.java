@@ -93,92 +93,94 @@ public abstract class AbstractPiece {
      */
     public abstract LinkedList<String> legalCaptures(ChessBoard cb, String currentPosition);
     
-    /**
-     * The ghostifier
-     */
-    private static RescaleOp rop;
-    
-    /**
-     * static init
-     */
-    static {
-        float[] scales = { 1f, 1f, 1f, 0.3f };
-        float[] offsets = new float[4];
-        rop = new RescaleOp(scales, offsets, null);
-    }
-    
-    /**
-     * The images for the black and white pieces
-     */
-    private static BufferedImage black, white;
-    
-    /**
-     * Loads the images for this piece
-     * @param b the black image
-     * @param w the white image
-     * @throws IOException if something goes wrong
-     */
-    public static void loadImages(URL b, URL w) throws IOException {
-        white = ImageIO.read(w);
-        black = ImageIO.read(b);
-        whiteGhost = ghostify(white);
-        blackGhost = ghostify(black);
-    }
-    
-    /**
-     * Draws this piece
-     * @param g the Graphics to draw on
-     * @param x the X coordinate of the image
-     * @param y the Y coordinate of the image
-     * @param width the width of the picture
-     * @param height the height of the picture
-     */
-    public void draw(Graphics g, int x, int y, int width, int height) {
-        if(isWhite) {
-            g.drawImage(white, x, y, width, height, null);
-        } else {
-            g.drawImage(black, x, y, width, height, null);
-        }
-    }
-    
-    /**
-     * The images for the black and white ghosts
-     */
-    private static BufferedImage blackGhost, whiteGhost;
-    
-    /**
-     * Turns the alpha of the image to 30%
-     * @param bi the BufferedImage to change
-     * @return the changed image
-     */
-    public static BufferedImage ghostify(BufferedImage bi) {
-        return rop.filter(bi, null);
-    }
-    
-    /**
-     * Draws a ghost of this image
-     * @param g the Graphics to draw on
-     * @param x the X coordinate of the image
-     * @param y the Y coordinate of the image
-     * @param width the width of the picture
-     * @param height the height of the picture
-     */
-    public void drawGhost(Graphics g, int x, int y, int width, int height) {
-        if(isWhite) {
-            g.drawImage(whiteGhost, x, y, width, height, null);
-        } else {
-            g.drawImage(blackGhost, x, y, width, height, null);
-        }
-    }
-    
-    /**
-     * Gets this piece's image that is white or black
-     * @param isWhite whether the image should be white or black
-     * @return the image that represents this piece
-     */
-    public static BufferedImage getImage(boolean isWhite) {
-        return (isWhite)?white:black;
-    }
+    //<editor-fold defaultstate="collapsed" desc="Old drawing code">
+//    /**
+//     * The ghostifier
+//     */
+//    private static RescaleOp rop;
+//
+//    /**
+//    * static init
+//    */
+//    static {
+//        float[] scales = { 1f, 1f, 1f, 0.3f };
+//        float[] offsets = new float[4];
+//        rop = new RescaleOp(scales, offsets, null);
+//    }
+//
+//    /**
+//     * The images for the black and white pieces
+//     */
+//    private static BufferedImage black, white;
+//
+//    /**
+//     * Loads the images for this piece
+//     * @param b the black image
+//     * @param w the white image
+//     * @throws IOException if something goes wrong
+//     */
+//    public static void loadImages(URL b, URL w) throws IOException {
+//        white = ImageIO.read(w);
+//        black = ImageIO.read(b);
+//        whiteGhost = ghostify(white);
+//        blackGhost = ghostify(black);
+//    }
+//
+//    /**
+//     * Draws this piece
+//     * @param g the Graphics to draw on
+//     * @param x the X coordinate of the image
+//     * @param y the Y coordinate of the image
+//     * @param width the width of the picture
+//     * @param height the height of the picture
+//     */
+//    public void draw(Graphics g, int x, int y, int width, int height) {
+//        if(isWhite) {
+//            g.drawImage(white, x, y, width, height, null);
+//        } else {
+//            g.drawImage(black, x, y, width, height, null);
+//        }
+//    }
+//
+//    /**
+//     * The images for the black and white ghosts
+//     */
+//    private static BufferedImage blackGhost, whiteGhost;
+//
+//    /**
+//     * Turns the alpha of the image to 30%
+//     * @param bi the BufferedImage to change
+//     * @return the changed image
+//     */
+//    public static BufferedImage ghostify(BufferedImage bi) {
+//        return rop.filter(bi, null);
+//    }
+//
+//    /**
+//     * Draws a ghost of this image
+//     * @param g the Graphics to draw on
+//     * @param x the X coordinate of the image
+//     * @param y the Y coordinate of the image
+//     * @param width the width of the picture
+//     * @param height the height of the picture
+//     */
+//    public void drawGhost(Graphics g, int x, int y, int width, int height) {
+//        if(isWhite) {
+//            g.drawImage(whiteGhost, x, y, width, height, null);
+//        } else {
+//            g.drawImage(blackGhost, x, y, width, height, null);
+//        }
+//    }
+//
+//    /**
+//     * Gets this piece's image that is white or black
+//     * @param isWhite whether the image should be white or black
+//     * @return the image that represents this piece
+//     */
+//    public static BufferedImage getImage(boolean isWhite) {
+//        return (isWhite)?white:black;
+//    }
+//</editor-fold>
     
     /**
      * Returns the character that represents this piece
